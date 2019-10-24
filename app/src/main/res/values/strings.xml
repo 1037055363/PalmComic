@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MaterialX</string>
+
+    <string name="nav_home">首页</string>
+    <string name="nav_game">游戏</string>
+    <string name="nav_news">新闻</string>
+
+    <string name="nav_setting">设置</string>
+    <string name="nav_github">Github</string>
+    <string name="nav_about">关于</string>
+
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">1037055363@qq.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+</resources>
