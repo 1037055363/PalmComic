@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +18,15 @@ import com.example.comic.app.base.MySupportFragment;
 import com.example.comic.di.component.DaggerHomeComponent;
 import com.example.comic.mvp.contract.HomeContract;
 import com.example.comic.mvp.presenter.HomePresenter;
+import com.example.comic.mvp.ui.adapter.CalendarAdapter;
+import com.flyco.tablayout.SlidingTabLayout;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
 
 import org.simple.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -42,6 +49,10 @@ public class HomeFragment extends MySupportFragment<HomePresenter> implements Ho
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.vp_content)
+    ViewPager vp_content;
+    @BindView(R.id.tab)
+    SlidingTabLayout st_tab;
 
     public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
@@ -66,6 +77,7 @@ public class HomeFragment extends MySupportFragment<HomePresenter> implements Ho
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
         initToolBar();
+        initTabFragment();
     }
 
     private void initToolBar() {
@@ -77,6 +89,22 @@ public class HomeFragment extends MySupportFragment<HomePresenter> implements Ho
                 EventBus.getDefault().post(new MainTag(), "openDrawer");
             }
         });
+    }
+
+    private void initTabFragment() {
+        String[] tabNameArray = {getString(R.string.monday), getString(R.string.tuesday)
+                , getString(R.string.wednesday), getString(R.string.thursday)
+                , getString(R.string.friday), getString(R.string.saturday)
+                , getString(R.string.sunday)};
+
+        CalendarAdapter adapter = new CalendarAdapter(getChildFragmentManager());
+        for (int i = 0; i < tabNameArray.length; i++) {
+            adapter.addFragment(CalendarFragment.newInstance(i), tabNameArray[i]);
+        }
+        vp_content.setAdapter(adapter);
+        st_tab.setViewPager(vp_content);
+        // 设置tab选项卡的默认选项
+        st_tab.setCurrentTab(0);
     }
 
     @Override

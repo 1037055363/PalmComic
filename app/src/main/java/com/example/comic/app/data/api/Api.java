@@ -10,5 +10,5 @@ package com.example.comic.app.data.api;
  * ================================================
  */
 public interface Api {
-    String APP_DOMAIN = "https://api.github.com";
+    String APP_DOMAIN = "https://api.bgm.tv";
 }

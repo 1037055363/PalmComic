@@ -2,6 +2,8 @@ package com.example.comic.mvp.model;
 
 import android.app.Application;
 
+import com.example.comic.app.data.api.service.Anime;
+import com.example.comic.app.data.entity.AnimeBean;
 import com.google.gson.Gson;
 import com.jess.arms.integration.IRepositoryManager;
 import com.jess.arms.mvp.BaseModel;
@@ -11,6 +13,10 @@ import com.jess.arms.di.scope.FragmentScope;
 import javax.inject.Inject;
 
 import com.example.comic.mvp.contract.CalendarContract;
+
+import java.util.List;
+
+import io.reactivex.Observable;
 
 
 /**
@@ -42,5 +48,10 @@ public class CalendarModel extends BaseModel implements CalendarContract.Model {
         super.onDestroy();
         this.mGson = null;
         this.mApplication = null;
+    }
+
+    @Override
+    public Observable<List<AnimeBean>> getAllData() {
+        return mRepositoryManager.obtainRetrofitService(Anime.class).getAllData();
     }
 }

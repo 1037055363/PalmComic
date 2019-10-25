@@ -6,10 +6,17 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.comic.app.base.MySupportFragment;
+import com.example.comic.app.data.entity.AnimeBean;
+import com.example.comic.mvp.ui.adapter.HomeItemAdapter;
 import com.jess.arms.base.BaseFragment;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
@@ -19,6 +26,9 @@ import com.example.comic.mvp.contract.CalendarContract;
 import com.example.comic.mvp.presenter.CalendarPresenter;
 
 import com.example.comic.R;
+
+import butterknife.BindView;
+import timber.log.Timber;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
 
@@ -35,10 +45,23 @@ import static com.jess.arms.utils.Preconditions.checkNotNull;
  * <a href="https://github.com/JessYanCoding/MVPArmsTemplate">模版请保持更新</a>
  * ================================================
  */
-public class CalendarFragment extends BaseFragment<CalendarPresenter> implements CalendarContract.View {
+public class CalendarFragment extends MySupportFragment<CalendarPresenter> implements CalendarContract.View {
 
-    public static CalendarFragment newInstance() {
+    private GridLayoutManager gridLayoutManager;
+    private HomeItemAdapter homeItemAdapter;
+
+    @BindView(R.id.rv_anime)
+    RecyclerView mRecycleView;
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout mRefreshLayout;
+
+    public int mPosition;
+
+    public static CalendarFragment newInstance(int position) {
         CalendarFragment fragment = new CalendarFragment();
+        Bundle args = new Bundle();
+        args.putInt("position", position);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -59,45 +82,24 @@ public class CalendarFragment extends BaseFragment<CalendarPresenter> implements
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
-
+        if (getArguments() != null) {
+            mPosition = getArguments().getInt("position");
+            initRefreshLayout();
+            if (mPresenter != null) {
+                mPresenter.refreshAll(mPosition);
+            }
+        }
     }
 
-    /**
-     * 通过此方法可以使 Fragment 能够与外界做一些交互和通信, 比如说外部的 Activity 想让自己持有的某个 Fragment 对象执行一些方法,
-     * 建议在有多个需要与外界交互的方法时, 统一传 {@link Message}, 通过 what 字段来区分不同的方法, 在 {@link #setData(Object)}
-     * 方法中就可以 {@code switch} 做不同的操作, 这样就可以用统一的入口方法做多个不同的操作, 可以起到分发的作用
-     * <p>
-     * 调用此方法时请注意调用时 Fragment 的生命周期, 如果调用 {@link #setData(Object)} 方法时 {@link Fragment#onCreate(Bundle)} 还没执行
-     * 但在 {@link #setData(Object)} 里却调用了 Presenter 的方法, 是会报空的, 因为 Dagger 注入是在 {@link Fragment#onCreate(Bundle)} 方法中执行的
-     * 然后才创建的 Presenter, 如果要做一些初始化操作,可以不必让外部调用 {@link #setData(Object)}, 在 {@link #initData(Bundle)} 中初始化就可以了
-     * <p>
-     * Example usage:
-     * <pre>
-     * public void setData(@Nullable Object data) {
-     *     if (data != null && data instanceof Message) {
-     *         switch (((Message) data).what) {
-     *             case 0:
-     *                 loadData(((Message) data).arg1);
-     *                 break;
-     *             case 1:
-     *                 refreshUI();
-     *                 break;
-     *             default:
-     *                 //do something
-     *                 break;
-     *         }
-     *     }
-     * }
-     *
-     * // call setData(Object):
-     * Message data = new Message();
-     * data.what = 0;
-     * data.arg1 = 1;
-     * fragment.setData(data);
-     * </pre>
-     *
-     * @param data 当不需要参数时 {@code data} 可以为 {@code null}
-     */
+    private void initRefreshLayout() {
+        mRefreshLayout.setColorSchemeColors(ArmsUtils.getColor(_mActivity, R.color.colorPrimary));
+        mRefreshLayout.setOnRefreshListener(() -> {
+            if (mPresenter != null) {
+                mPresenter.refreshAll(mPosition);
+            }
+        });
+    }
+
     @Override
     public void setData(@Nullable Object data) {
 
@@ -105,12 +107,12 @@ public class CalendarFragment extends BaseFragment<CalendarPresenter> implements
 
     @Override
     public void showLoading() {
-
+        mRefreshLayout.setRefreshing(true);
     }
 
     @Override
     public void hideLoading() {
-
+        mRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -128,5 +130,12 @@ public class CalendarFragment extends BaseFragment<CalendarPresenter> implements
     @Override
     public void killMyself() {
 
+    }
+
+    @Override
+    public void setHomeAdapter(HomeItemAdapter homeAdapter) {
+        gridLayoutManager = new GridLayoutManager(_mActivity, 2);
+        mRecycleView.setLayoutManager(gridLayoutManager);
+        mRecycleView.setAdapter(homeAdapter);
     }
 }
