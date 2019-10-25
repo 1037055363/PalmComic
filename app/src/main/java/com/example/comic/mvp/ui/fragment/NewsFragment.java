@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.comic.app.Tag.MainTag;
 import com.example.comic.app.base.MySupportFragment;
 import com.example.comic.mvp.presenter.NewsPresenter;
 import com.jess.arms.base.BaseFragment;
@@ -21,6 +22,8 @@ import com.example.comic.di.component.DaggerNewsComponent;
 import com.example.comic.mvp.contract.NewsContract;
 
 import com.example.comic.R;
+
+import org.simple.eventbus.EventBus;
 
 import butterknife.BindView;
 
@@ -75,7 +78,7 @@ public class NewsFragment extends MySupportFragment<NewsPresenter> implements Ne
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                EventBus.getDefault().post(new MainTag(), "openDrawer");
             }
         });
     }

@@ -11,17 +11,17 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.comic.R;
+import com.example.comic.app.Tag.MainTag;
 import com.example.comic.app.base.MySupportFragment;
 import com.example.comic.di.component.DaggerHomeComponent;
 import com.example.comic.mvp.contract.HomeContract;
 import com.example.comic.mvp.presenter.HomePresenter;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
-import com.mikepenz.materialdrawer.Drawer;
+
+import org.simple.eventbus.EventBus;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 import static com.jess.arms.utils.Preconditions.checkNotNull;
 
@@ -74,7 +74,7 @@ public class HomeFragment extends MySupportFragment<HomePresenter> implements Ho
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                EventBus.getDefault().post(new MainTag(), "openDrawer");
             }
         });
     }

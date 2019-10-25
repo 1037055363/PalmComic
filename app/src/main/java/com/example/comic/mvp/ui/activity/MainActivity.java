@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.MenuItem;
 import android.view.View;
 
+import com.example.comic.app.Tag.MainTag;
 import com.example.comic.app.base.MySupportActivity;
 import com.example.comic.mvp.ui.fragment.GameFragment;
 import com.example.comic.mvp.ui.fragment.HomeFragment;
@@ -27,6 +29,9 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 
+
+import org.simple.eventbus.Subscriber;
+import org.simple.eventbus.ThreadMode;
 
 import me.yokeyword.fragmentation.SupportFragment;
 
@@ -130,6 +135,11 @@ public class MainActivity extends MySupportActivity<MainPresenter> implements Ma
         }
     }
 
+    @Subscriber(tag = "openDrawer")
+    public void openDrawer(MainTag mainTag) {
+        result.openDrawer();
+    }
+
     @Override
     public void showLoading() {
 
@@ -157,4 +167,19 @@ public class MainActivity extends MySupportActivity<MainPresenter> implements Ma
         finish();
     }
 
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        //handle the click on the back arrow click
+//        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                if (result != null && result.isDrawerOpen()) {
+//                    result.closeDrawer();
+//                } else {
+//                    super.onBackPressed();
+//                }
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 }
