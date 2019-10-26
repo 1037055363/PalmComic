@@ -9,11 +9,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.comic.app.base.MySupportFragment;
 import com.example.comic.app.data.entity.AnimeBean;
 import com.example.comic.mvp.ui.adapter.HomeItemAdapter;
@@ -47,8 +49,8 @@ import static com.jess.arms.utils.Preconditions.checkNotNull;
  */
 public class CalendarFragment extends MySupportFragment<CalendarPresenter> implements CalendarContract.View {
 
-    private GridLayoutManager gridLayoutManager;
-    private HomeItemAdapter homeItemAdapter;
+    private StaggeredGridLayoutManager gridLayoutManager;
+    private View view;
 
     @BindView(R.id.rv_anime)
     RecyclerView mRecycleView;
@@ -56,6 +58,7 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
     SwipeRefreshLayout mRefreshLayout;
 
     public int mPosition;
+    private boolean mIsFirst = true;
 
     public static CalendarFragment newInstance(int position) {
         CalendarFragment fragment = new CalendarFragment();
@@ -77,17 +80,27 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
 
     @Override
     public View initView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_calendar, container, false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_calendar, container, false);
+        }
+        return view;
     }
 
     @Override
     public void initData(@Nullable Bundle savedInstanceState) {
         if (getArguments() != null) {
             mPosition = getArguments().getInt("position");
-            initRefreshLayout();
-            if (mPresenter != null) {
-                mPresenter.refreshAll(mPosition);
-            }
+        }
+        initRefreshLayout();
+    }
+
+    @Override
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
+        Timber.d("进行了懒加载");
+        if (mPresenter != null && mIsFirst) {
+            mPresenter.loadData(mPosition, true, mIsFirst);
+            mIsFirst = false;
         }
     }
 
@@ -95,9 +108,18 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
         mRefreshLayout.setColorSchemeColors(ArmsUtils.getColor(_mActivity, R.color.colorPrimary));
         mRefreshLayout.setOnRefreshListener(() -> {
             if (mPresenter != null) {
-                mPresenter.refreshAll(mPosition);
+                mPresenter.loadData(mPosition, true, true);
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Timber.d("执行了");
+        if (view != null) {
+            ((ViewGroup) view.getParent()).removeView(view);
+        }
     }
 
     @Override
@@ -134,8 +156,10 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
 
     @Override
     public void setHomeAdapter(HomeItemAdapter homeAdapter) {
-        gridLayoutManager = new GridLayoutManager(_mActivity, 2);
+        gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecycleView.setLayoutManager(gridLayoutManager);
+        homeAdapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);
         mRecycleView.setAdapter(homeAdapter);
     }
+
 }

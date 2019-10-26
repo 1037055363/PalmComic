@@ -14,8 +14,8 @@ public class HomeItemAdapter extends BaseQuickAdapter<AnimeBean.ItemsBean, BaseV
 
     private AppComponent mAppComponent;
 
-    public HomeItemAdapter(int layoutResId, List<AnimeBean.ItemsBean> data) {
-        super(layoutResId, data);
+    public HomeItemAdapter(List<AnimeBean.ItemsBean> data) {
+        super(R.layout.item_home, data);
     }
 
     @Override
@@ -23,16 +23,27 @@ public class HomeItemAdapter extends BaseQuickAdapter<AnimeBean.ItemsBean, BaseV
         if (mAppComponent == null) {
             mAppComponent = ArmsUtils.obtainAppComponentFromContext(mContext);
         }
-        if (item.getImages() == null) {
+        // 图片
+        if (item.getImages() != null) {
+            mAppComponent.imageLoader().loadImage(mContext, ImageConfigImpl.builder().placeholder(R.mipmap.img_on_load).imageView(helper.getView(R.id.iv_img)).url(item.getImages().getLarge()).build());
+        } else {
             helper.setImageResource(R.id.iv_img, R.mipmap.img_on_load);
-        } else {
-            mAppComponent.imageLoader().loadImage(mContext, ImageConfigImpl.builder().imageView(helper.getView(R.id.iv_img)).url(item.getImages().getLarge()).build());
         }
+        // 标题
         if (item.getName_cn() == null || item.getName_cn().equals("")) {
-            helper.setText(R.id.tv_name, item.getName());
+            helper.setText(R.id.tv_calendar_name, item.getName());
         } else {
-            helper.setText(R.id.tv_name, item.getName_cn());
+            helper.setText(R.id.tv_calendar_name, item.getName_cn());
         }
+        // 评分以及排名
+        String rank = "";
+        if (item.getRank() != 0 && !" ".equals(item.getRank())) {
+            rank = item.getRank() + "";
+        } else {
+            rank = "???";
+        }
+        helper.setText(R.id.tv_calendar_outline, "评分: 5.4 / 排名: " + rank);
+
 
     }
 }

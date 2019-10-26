@@ -67,7 +67,7 @@ public class CalendarPresenter extends BasePresenter<CalendarContract.Model, Cal
         this.mApplication = null;
     }
 
-    public void refreshAll(int position) {
+    public void loadData(int position, boolean refresh, boolean isFirst) {
         mModel.getAllData()
                 // 当请求失败时重新请求  3为次数  2为间隔s
                 .retryWhen(new RetryWithDelay(3, 2))
@@ -75,34 +75,35 @@ public class CalendarPresenter extends BasePresenter<CalendarContract.Model, Cal
                 .subscribeOn(Schedulers.io())
                 // 观察的线程
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
+                .doOnSubscribe(disposable -> {
+                    if (refresh && isFirst) {
                         mRootView.showLoading();
                     }
                 })
                 .doFinally(new Action() {
                     @Override
                     public void run() throws Exception {
-                        mRootView.hideLoading();
+                        if (refresh && isFirst) {
+                            mRootView.hideLoading();
+                        }
                     }
                 })
                 .compose(RxLifecycleUtils.bindToLifecycle(mRootView))
                 .subscribe(new ErrorHandleSubscriber<List<AnimeBean>>(mErrorHandler) {
                     @Override
                     public void onNext(List<AnimeBean> animeBeans) {
-                        setHomeAdapter(animeBeans.get(position));
+                        setHomeAdapter(animeBeans.get(position),refresh);
                     }
                 });
     }
 
-    private void setHomeAdapter(AnimeBean animeBean) {
-//        if (mAdapter == null) {
-            mAdapter = new HomeItemAdapter(R.layout.item_home, animeBean.getItems());
-            mRootView.setHomeAdapter(mAdapter);
-//        } else {
-//            Timber.d(animeBean.getItems().get(0).getName_cn());
-//            mAdapter.setNewData(animeBean.getItems());
-//        }
+    private void setHomeAdapter(AnimeBean animeBean,boolean refresh) {
+        if (mAdapter == null) {
+            mAdapter = new HomeItemAdapter(animeBean.getItems());
+        }
+        if (refresh){
+            mAdapter.setNewData(animeBean.getItems());
+        }
+        mRootView.setHomeAdapter(mAdapter);
     }
 }
