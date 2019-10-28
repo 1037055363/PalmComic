@@ -100,6 +100,7 @@ public class AnimeBean {
         private String air_date;
         private int air_weekday;
         private int rank;
+        private RatingBean rating;
         private ImagesBean images;
         private CollectionBean collection;
 
@@ -175,6 +176,14 @@ public class AnimeBean {
             this.rank = rank;
         }
 
+        public RatingBean getRating() {
+            return rating;
+        }
+
+        public void setRating(RatingBean rating) {
+            this.rating = rating;
+        }
+
         public ImagesBean getImages() {
             return images;
         }
@@ -189,6 +198,33 @@ public class AnimeBean {
 
         public void setCollection(CollectionBean collection) {
             this.collection = collection;
+        }
+
+        public static class RatingBean {
+            /**
+             * total : 311
+             * count : {"1":1,"2":0,"3":6,"4":2,"5":32,"6":105,"7":116,"8":35,"9":4,"10":10}
+             * score : 6.6
+             */
+
+            private int total;
+            private String score;
+
+            public int getTotal() {
+                return total;
+            }
+
+            public void setTotal(int total) {
+                this.total = total;
+            }
+
+            public String getScore() {
+                return score;
+            }
+
+            public void setScore(String score) {
+                this.score = score;
+            }
         }
 
         public static class ImagesBean {

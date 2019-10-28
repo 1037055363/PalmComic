@@ -2,24 +2,18 @@ package com.example.comic.mvp.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.comic.app.base.MySupportFragment;
-import com.example.comic.app.data.entity.AnimeBean;
-import com.example.comic.mvp.ui.adapter.HomeItemAdapter;
-import com.jess.arms.base.BaseFragment;
+import com.example.comic.mvp.ui.adapter.CalendarItemAdapter;
 import com.jess.arms.di.component.AppComponent;
 import com.jess.arms.utils.ArmsUtils;
 
@@ -155,7 +149,7 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
     }
 
     @Override
-    public void setHomeAdapter(HomeItemAdapter homeAdapter) {
+    public void setHomeAdapter(CalendarItemAdapter homeAdapter) {
         gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mRecycleView.setLayoutManager(gridLayoutManager);
         homeAdapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);

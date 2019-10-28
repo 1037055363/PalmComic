@@ -2,23 +2,19 @@ package com.example.comic.mvp.presenter;
 
 import android.app.Application;
 
-import com.example.comic.R;
 import com.example.comic.app.data.entity.AnimeBean;
-import com.example.comic.mvp.ui.adapter.HomeItemAdapter;
+import com.example.comic.mvp.ui.adapter.CalendarItemAdapter;
 import com.jess.arms.integration.AppManager;
 import com.jess.arms.di.scope.FragmentScope;
 import com.jess.arms.mvp.BasePresenter;
 import com.jess.arms.http.imageloader.ImageLoader;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import me.jessyan.rxerrorhandler.core.RxErrorHandler;
 import me.jessyan.rxerrorhandler.handler.ErrorHandleSubscriber;
 import me.jessyan.rxerrorhandler.handler.RetryWithDelay;
-import timber.log.Timber;
 
 import javax.inject.Inject;
 
@@ -51,7 +47,7 @@ public class CalendarPresenter extends BasePresenter<CalendarContract.Model, Cal
     @Inject
     AppManager mAppManager;
 
-    private HomeItemAdapter mAdapter;
+    private CalendarItemAdapter mAdapter;
 
     @Inject
     public CalendarPresenter(CalendarContract.Model model, CalendarContract.View rootView) {
@@ -92,16 +88,21 @@ public class CalendarPresenter extends BasePresenter<CalendarContract.Model, Cal
                 .subscribe(new ErrorHandleSubscriber<List<AnimeBean>>(mErrorHandler) {
                     @Override
                     public void onNext(List<AnimeBean> animeBeans) {
-                        setHomeAdapter(animeBeans.get(position),refresh);
+                        setHomeAdapter(animeBeans.get(position), refresh);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+//                        mAdapter.setEmptyView();
                     }
                 });
     }
 
-    private void setHomeAdapter(AnimeBean animeBean,boolean refresh) {
+    private void setHomeAdapter(AnimeBean animeBean, boolean refresh) {
         if (mAdapter == null) {
-            mAdapter = new HomeItemAdapter(animeBean.getItems());
+            mAdapter = new CalendarItemAdapter(animeBean.getItems());
         }
-        if (refresh){
+        if (refresh) {
             mAdapter.setNewData(animeBean.getItems());
         }
         mRootView.setHomeAdapter(mAdapter);

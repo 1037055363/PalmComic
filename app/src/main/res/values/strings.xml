@@ -18,6 +18,8 @@
     <string name="sunday">星期日</string>
     <string name="score_average">评分: %1$s / 排名: %2$s</string>
 
+    <string name="main_search">搜索</string>
+
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">1037055363@qq.com</string>
     <string name="nav_header_desc">Navigation header</string>

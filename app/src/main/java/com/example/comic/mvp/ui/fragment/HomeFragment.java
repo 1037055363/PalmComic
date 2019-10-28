@@ -6,8 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -82,12 +86,23 @@ public class HomeFragment extends MySupportFragment<HomePresenter> implements Ho
     }
 
     private void initToolBar() {
+//        ((AppCompatActivity) _mActivity).setSupportActionBar(toolbar);
+//        ((AppCompatActivity) _mActivity).getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("首页");
-        _mActivity.setSupportActionBar(toolbar);
+        toolbar.inflateMenu(R.menu.main_home_menu);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EventBus.getDefault().post(new MainTag(), "openDrawer");
+            }
+        });
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.main_search) {
+                    showMessage("搜索...");
+                }
+                return false;
             }
         });
     }
@@ -139,5 +154,4 @@ public class HomeFragment extends MySupportFragment<HomePresenter> implements Ho
     public void killMyself() {
 
     }
-
 }

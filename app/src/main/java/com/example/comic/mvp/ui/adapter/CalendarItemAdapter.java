@@ -10,11 +10,11 @@ import com.jess.arms.utils.ArmsUtils;
 
 import java.util.List;
 
-public class HomeItemAdapter extends BaseQuickAdapter<AnimeBean.ItemsBean, BaseViewHolder> {
+public class CalendarItemAdapter extends BaseQuickAdapter<AnimeBean.ItemsBean, BaseViewHolder> {
 
     private AppComponent mAppComponent;
 
-    public HomeItemAdapter(List<AnimeBean.ItemsBean> data) {
+    public CalendarItemAdapter(List<AnimeBean.ItemsBean> data) {
         super(R.layout.item_home, data);
     }
 
@@ -27,7 +27,9 @@ public class HomeItemAdapter extends BaseQuickAdapter<AnimeBean.ItemsBean, BaseV
         if (item.getImages() != null) {
             mAppComponent.imageLoader().loadImage(mContext, ImageConfigImpl.builder().placeholder(R.mipmap.img_on_load).imageView(helper.getView(R.id.iv_img)).url(item.getImages().getLarge()).build());
         } else {
-            helper.setImageResource(R.id.iv_img, R.mipmap.img_on_load);
+            // 暂时代替图片
+            String url = "http://img0.imgtn.bdimg.com/it/u=546853275,1657072749&fm=15&gp=0.jpg";
+            mAppComponent.imageLoader().loadImage(mContext, ImageConfigImpl.builder().placeholder(R.mipmap.img_on_load).imageView(helper.getView(R.id.iv_img)).url(url).build());
         }
         // 标题
         if (item.getName_cn() == null || item.getName_cn().equals("")) {
@@ -42,7 +44,13 @@ public class HomeItemAdapter extends BaseQuickAdapter<AnimeBean.ItemsBean, BaseV
         } else {
             rank = "???";
         }
-        helper.setText(R.id.tv_calendar_outline, "评分: 5.4 / 排名: " + rank);
+        String score = "";
+        if (item.getRating() != null) {
+            score = item.getRating().getScore();
+        } else {
+            score = "???";
+        }
+        helper.setText(R.id.tv_calendar_outline, "评分: " + score + " / 排名: " + rank);
 
 
     }
