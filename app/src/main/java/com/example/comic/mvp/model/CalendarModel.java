@@ -2,7 +2,8 @@ package com.example.comic.mvp.model;
 
 import android.app.Application;
 
-import com.example.comic.app.data.api.service.Anime;
+import com.example.comic.app.data.api.cache.AnimeCache;
+import com.example.comic.app.data.api.service.AnimeService;
 import com.example.comic.app.data.entity.AnimeBean;
 import com.google.gson.Gson;
 import com.jess.arms.integration.IRepositoryManager;
@@ -17,6 +18,9 @@ import com.example.comic.mvp.contract.CalendarContract;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+import io.rx_cache2.EvictProvider;
+import io.rx_cache2.Reply;
 
 
 /**
@@ -51,7 +55,17 @@ public class CalendarModel extends BaseModel implements CalendarContract.Model {
     }
 
     @Override
-    public Observable<List<AnimeBean>> getAllData() {
-        return mRepositoryManager.obtainRetrofitService(Anime.class).getAllData();
+    public Observable<List<AnimeBean>> getAllData(boolean update) {
+//        return mRepositoryManager.obtainRetrofitService(AnimeService.class).getAllData();
+        Observable<List<AnimeBean>> data = mRepositoryManager.obtainRetrofitService(AnimeService.class).getAllData();
+        return mRepositoryManager
+                .obtainCacheService(AnimeCache.class)
+                .getAllData(data,new EvictProvider(update))
+                .map(new Function<Reply<List<AnimeBean>>, List<AnimeBean>>() {
+                    @Override
+                    public List<AnimeBean> apply(Reply<List<AnimeBean>> listReply) throws Exception {
+                        return listReply.getData();
+                    }
+                });
     }
 }

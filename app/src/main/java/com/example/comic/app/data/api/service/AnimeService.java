@@ -7,7 +7,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 
-public interface Anime {
+public interface AnimeService {
 
     /**
      * 获取所有动画列表

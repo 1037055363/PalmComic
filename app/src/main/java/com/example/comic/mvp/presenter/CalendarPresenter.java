@@ -63,8 +63,8 @@ public class CalendarPresenter extends BasePresenter<CalendarContract.Model, Cal
         this.mApplication = null;
     }
 
-    public void loadData(int position, boolean refresh, boolean isFirst) {
-        mModel.getAllData()
+    public void loadData(int position, boolean refresh) {
+        mModel.getAllData(refresh)
                 // 当请求失败时重新请求  3为次数  2为间隔s
                 .retryWhen(new RetryWithDelay(3, 2))
                 // 订阅的线程
@@ -72,14 +72,14 @@ public class CalendarPresenter extends BasePresenter<CalendarContract.Model, Cal
                 // 观察的线程
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> {
-                    if (refresh && isFirst) {
+                    if (refresh) {
                         mRootView.showLoading();
                     }
                 })
                 .doFinally(new Action() {
                     @Override
                     public void run() throws Exception {
-                        if (refresh && isFirst) {
+                        if (refresh) {
                             mRootView.hideLoading();
                         }
                     }

@@ -92,8 +92,8 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
     public void onLazyInitView(@Nullable Bundle savedInstanceState) {
         super.onLazyInitView(savedInstanceState);
         Timber.d("进行了懒加载");
-        if (mPresenter != null && mIsFirst) {
-            mPresenter.loadData(mPosition, true, mIsFirst);
+        if (mPresenter != null) {
+            mPresenter.loadData(mPosition, mIsFirst);
             mIsFirst = false;
         }
     }
@@ -102,7 +102,7 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
         mRefreshLayout.setColorSchemeColors(ArmsUtils.getColor(_mActivity, R.color.colorPrimary));
         mRefreshLayout.setOnRefreshListener(() -> {
             if (mPresenter != null) {
-                mPresenter.loadData(mPosition, true, true);
+                mPresenter.loadData(mPosition, true);
             }
         });
     }
@@ -110,7 +110,6 @@ public class CalendarFragment extends MySupportFragment<CalendarPresenter> imple
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Timber.d("执行了");
         if (view != null) {
             ((ViewGroup) view.getParent()).removeView(view);
         }
